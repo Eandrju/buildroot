@@ -1,30 +1,26 @@
-# ftDev Buildroot Repository
+# Based on ftDev Buildroot Repository
 
-## Description
+## How to build it with docker
 
-This branch is specialized for Raspberry Pi 3 for now.
+Build docker image:
+```bash
+docker build -t buildroot-fastboot-rpi-builder .
+```
+Create volume for buildroot directory:
+```bash
+docker volume create fastboot_buildroot_volume
+```
 
-Base Buildroot Version  : 2019.02.5
+Run with:
+```bash
+docker run -v fastboot_buildroot_volume:/buildroot -it buildroot-fastboot-rpi-builder
+```
 
-For details, you can read my blogpost: https://furkantokac.com/rpi3-fast-boot-less-than-2-seconds/
+Then as instructed in ftDev repo:
+```bash
+make ftdev_rpi3_fastboot_defconfig && \
+make -j8 2>&1 | tee output_buildroot.log && \
+./build-rpi3-qt.sh 2>&1 | tee output_qt.log
+```
 
-
-## Scripts
-
-Name             | Function
---               | --
-build-rpi3-qt.sh | Builds static Qt. Run this after build RPI3 image.
-
-
-## Quick Start
-
-### Build RPI3 fastboot distro + static Qt
-
-1. make ftdev_rpi3_fastboot_defconfig
-2. make -j8
-3. ./build-rpi3-qt.sh
-
-Output File | Path
---          | --
-RPI3 Image  | output/images/sdcard.img
-qmake       | output/qt/qt-everywhere-src-*/aaaout/bin/qmake
+Generated files in our volume can be now used to compile static QT app. 
